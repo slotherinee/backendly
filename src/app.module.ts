@@ -6,6 +6,7 @@ import { AuthModule } from '@modules/auth/auth.module';
 import { UsersModule } from '@modules/users/users.module';
 import { ProjectsModule } from '@modules/projects/projects.module';
 import { ApiKeysModule } from '@modules/api-keys/api-keys.module';
+import { CollectionsModule } from '@modules/collections/collections.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ApiKeysModule } from '@modules/api-keys/api-keys.module';
     UsersModule,
     ProjectsModule,
     ApiKeysModule,
+    CollectionsModule,
   ],
 })
 export class AppModule {}
