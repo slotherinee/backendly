@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@prisma/generated/prisma/client';
@@ -10,6 +11,7 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 export const auth = betterAuth({
+  baseURL: process.env.BASE_URL ?? 'http://localhost:4000',
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
