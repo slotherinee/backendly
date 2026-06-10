@@ -5,6 +5,7 @@ import { PrismaModule } from '@infra/database/prisma.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { UsersModule } from '@modules/users/users.module';
 import { ProjectsModule } from '@modules/projects/projects.module';
+import { ApiKeysModule } from '@modules/api-keys/api-keys.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ProjectsModule } from '@modules/projects/projects.module';
     AuthModule,
     UsersModule,
     ProjectsModule,
+    ApiKeysModule,
   ],
 })
 export class AppModule {}
