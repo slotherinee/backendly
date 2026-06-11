@@ -3,14 +3,18 @@ import {
   IsBoolean,
   IsIn,
   IsInt,
-  IsObject,
   IsOptional,
   IsString,
   Matches,
+  Max,
   MaxLength,
   Min,
 } from 'class-validator';
-import { ALLOWED_METHODS } from '../constants/collections.constants';
+import {
+  ALLOWED_METHODS,
+  MAX_COLLECTION_LIMIT,
+} from '../constants/collections.constants';
+import { IsJsonSchema } from '@common/decorators/is-json-schema.decorator';
 
 export class CreateCollectionDto {
   @IsString()
@@ -38,7 +42,7 @@ export class CreateCollectionDto {
   protectedMethods?: string[];
 
   @IsOptional()
-  @IsObject()
+  @IsJsonSchema()
   validationSchema?: Record<string, unknown>;
 
   @IsOptional()
@@ -54,4 +58,10 @@ export class CreateCollectionDto {
   @IsInt()
   @Min(1)
   maxItems?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_COLLECTION_LIMIT)
+  defaultLimit?: number;
 }

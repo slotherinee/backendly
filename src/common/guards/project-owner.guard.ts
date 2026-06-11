@@ -8,8 +8,12 @@ import {
 import { PrismaService } from '@infra/database/prisma.service';
 import type { Request } from 'express';
 import type { Session } from '@infra/auth/auth';
+import type { Project } from '@prisma/generated/prisma/client';
 
-type AuthRequest = Request & { user: Session['user'] };
+type AuthRequest = Request & {
+  user: Session['user'];
+  resolvedProject: Project;
+};
 
 @Injectable()
 export class ProjectOwnerGuard implements CanActivate {
@@ -19,13 +23,12 @@ export class ProjectOwnerGuard implements CanActivate {
     const req = context.switchToHttp().getRequest<AuthRequest>();
     const slug = req.params.slug as string;
 
-    const project = await this.prisma.project.findUnique({
-      where: { slug },
-      select: { ownerId: true },
-    });
+    const project = await this.prisma.project.findUnique({ where: { slug } });
 
     if (!project) throw new NotFoundException('Project not found');
     if (project.ownerId !== req.user.id) throw new ForbiddenException();
+
+    req.resolvedProject = project;
 
     return true;
   }

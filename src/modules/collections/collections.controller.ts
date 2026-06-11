@@ -8,10 +8,11 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ProjectOwnerGuard } from '@common/guards/project-owner.guard';
-import { ProjectsService } from '@modules/projects/projects.service';
+import type { ProjectRequest } from '@common/types/project-request.type';
 import { CollectionsService } from './collections.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
@@ -19,49 +20,51 @@ import { UpdateCollectionDto } from './dto/update-collection.dto';
 @Controller('projects/:slug/collections')
 @UseGuards(ProjectOwnerGuard)
 export class CollectionsController {
-  constructor(
-    private readonly collectionsService: CollectionsService,
-    private readonly projectsService: ProjectsService,
-  ) {}
+  constructor(private readonly collectionsService: CollectionsService) {}
 
   @Post()
-  async create(@Param('slug') slug: string, @Body() dto: CreateCollectionDto) {
-    const project = await this.projectsService.findBySlug(slug);
-    return this.collectionsService.create(project.id, dto);
+  create(@Req() req: ProjectRequest, @Body() dto: CreateCollectionDto) {
+    return this.collectionsService.create(req.resolvedProject.id, dto);
   }
 
   @Get()
-  async findAll(@Param('slug') slug: string) {
-    const project = await this.projectsService.findBySlug(slug);
-    return this.collectionsService.findAll(project.id);
+  findAll(@Req() req: ProjectRequest) {
+    return this.collectionsService.findAll(req.resolvedProject.id);
   }
 
   @Get(':collectionSlug')
-  async findOne(
-    @Param('slug') slug: string,
+  findOne(
+    @Req() req: ProjectRequest,
     @Param('collectionSlug') collectionSlug: string,
   ) {
-    const project = await this.projectsService.findBySlug(slug);
-    return this.collectionsService.findOne(project.id, collectionSlug);
+    return this.collectionsService.findOne(
+      req.resolvedProject.id,
+      collectionSlug,
+    );
   }
 
   @Patch(':collectionSlug')
-  async update(
-    @Param('slug') slug: string,
+  update(
+    @Req() req: ProjectRequest,
     @Param('collectionSlug') collectionSlug: string,
     @Body() dto: UpdateCollectionDto,
   ) {
-    const project = await this.projectsService.findBySlug(slug);
-    return this.collectionsService.update(project.id, collectionSlug, dto);
+    return this.collectionsService.update(
+      req.resolvedProject.id,
+      collectionSlug,
+      dto,
+    );
   }
 
   @Delete(':collectionSlug')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(
-    @Param('slug') slug: string,
+  delete(
+    @Req() req: ProjectRequest,
     @Param('collectionSlug') collectionSlug: string,
   ) {
-    const project = await this.projectsService.findBySlug(slug);
-    return this.collectionsService.delete(project.id, collectionSlug);
+    return this.collectionsService.delete(
+      req.resolvedProject.id,
+      collectionSlug,
+    );
   }
 }

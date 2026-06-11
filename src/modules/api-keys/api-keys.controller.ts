@@ -7,46 +7,32 @@ import {
   HttpStatus,
   Param,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { PrismaService } from '@infra/database/prisma.service';
 import { ProjectOwnerGuard } from '@common/guards/project-owner.guard';
+import type { ProjectRequest } from '@common/types/project-request.type';
 import { ApiKeysService } from './api-keys.service';
 import { CreateApiKeyDto } from './dto/create-api-key.dto';
 
 @Controller('projects/:slug/api-keys')
 @UseGuards(ProjectOwnerGuard)
 export class ApiKeysController {
-  constructor(
-    private readonly apiKeysService: ApiKeysService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly apiKeysService: ApiKeysService) {}
 
   @Post()
-  async create(@Param('slug') slug: string, @Body() dto: CreateApiKeyDto) {
-    const { id } = await this.prisma.project.findUniqueOrThrow({
-      where: { slug },
-      select: { id: true },
-    });
-    return this.apiKeysService.create(id, dto);
+  create(@Req() req: ProjectRequest, @Body() dto: CreateApiKeyDto) {
+    return this.apiKeysService.create(req.resolvedProject.id, dto);
   }
 
   @Get()
-  async findAll(@Param('slug') slug: string) {
-    const { id } = await this.prisma.project.findUniqueOrThrow({
-      where: { slug },
-      select: { id: true },
-    });
-    return this.apiKeysService.findAllByProject(id);
+  findAll(@Req() req: ProjectRequest) {
+    return this.apiKeysService.findAllByProject(req.resolvedProject.id);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async revoke(@Param('slug') slug: string, @Param('id') id: string) {
-    const project = await this.prisma.project.findUniqueOrThrow({
-      where: { slug },
-      select: { id: true },
-    });
-    return this.apiKeysService.revoke(id, project.id);
+  revoke(@Req() req: ProjectRequest, @Param('id') id: string) {
+    return this.apiKeysService.revoke(id, req.resolvedProject.id);
   }
 }

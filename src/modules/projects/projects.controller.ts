@@ -5,13 +5,14 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
 import { ProjectOwnerGuard } from '@common/guards/project-owner.guard';
+import type { ProjectRequest } from '@common/types/project-request.type';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -33,20 +34,20 @@ export class ProjectsController {
 
   @Get(':slug')
   @UseGuards(ProjectOwnerGuard)
-  findOne(@Param('slug') slug: string) {
-    return this.projectsService.findBySlug(slug);
+  findOne(@Req() req: ProjectRequest) {
+    return req.resolvedProject;
   }
 
   @Patch(':slug')
   @UseGuards(ProjectOwnerGuard)
-  update(@Param('slug') slug: string, @Body() dto: UpdateProjectDto) {
-    return this.projectsService.update(slug, dto);
+  update(@Req() req: ProjectRequest, @Body() dto: UpdateProjectDto) {
+    return this.projectsService.update(req.resolvedProject.slug, dto);
   }
 
   @Delete(':slug')
   @UseGuards(ProjectOwnerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param('slug') slug: string) {
-    return this.projectsService.delete(slug);
+  delete(@Req() req: ProjectRequest) {
+    return this.projectsService.delete(req.resolvedProject.slug);
   }
 }

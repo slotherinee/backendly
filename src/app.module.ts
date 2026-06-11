@@ -7,6 +7,7 @@ import { UsersModule } from '@modules/users/users.module';
 import { ProjectsModule } from '@modules/projects/projects.module';
 import { ApiKeysModule } from '@modules/api-keys/api-keys.module';
 import { CollectionsModule } from '@modules/collections/collections.module';
+import { EndpointsModule } from '@modules/endpoints/endpoints.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CollectionsModule } from '@modules/collections/collections.module';
     ProjectsModule,
     ApiKeysModule,
     CollectionsModule,
+    EndpointsModule,
   ],
 })
 export class AppModule {}
