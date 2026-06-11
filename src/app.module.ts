@@ -8,10 +8,12 @@ import { ProjectsModule } from '@modules/projects/projects.module';
 import { ApiKeysModule } from '@modules/api-keys/api-keys.module';
 import { CollectionsModule } from '@modules/collections/collections.module';
 import { EndpointsModule } from '@modules/endpoints/endpoints.module';
+import { AppThrottlerModule } from '@infra/throttler/throttler.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+    AppThrottlerModule,
     PrismaModule,
     AuthModule,
     UsersModule,
